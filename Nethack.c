@@ -6,14 +6,10 @@
 //-------------------------------------------------------------------------------------
 // CONSTANTS and TYPES
 
-void checkState();
-void solveDung( int move);
-void illuminate();
-void printDungeon();
-void createDungeon();
+
 //-------------------------------------------------------------------------------------
 
-#define MAX_DIMENSION 30
+#define MAX_DIMENSION 500
 // constant defination of the dungeon
 const char WALL        = '~';
 const char ILLUM_BFORE = '.';
@@ -33,18 +29,13 @@ struct DUNGEON
 };
 typedef struct DUNGEON Dungeon ;
 
-
-/*struct CELL_NODE
-{
-  Cell     cell;
-  CellNode *next;
-};
-typedef struct CELL_NODE CellNode;*/
-
 typedef enum BOOL { false, true } Boolean;
 
-//CellNode *top = NULL;
-
+void checkState();
+void solveDung( int move, Dungeon dungArr1);
+void illuminate(Dungeon dungArr1);
+void printDungeon(Dungeon dungArr2);
+void createDungeon();
 
 
 int main(int argc ,char* argv[])
@@ -53,6 +44,8 @@ int main(int argc ,char* argv[])
     int count = 0;
     int x;
     int i,j;
+    int len_tmp;
+    char title[MAX_DIMENSION];
     char *character;
 
 
@@ -68,12 +61,24 @@ int main(int argc ,char* argv[])
         FILE *file = fopen( argv[1], "r" );
 
 
-        character = fgets(argv[1], MAX_DIMENSION,stdin);
-        fscanf (file, "%d %d %d", &dungArr.row, &dungArr.col, dungArr.moves);
+        character = fgets(title, MAX_DIMENSION,file);
+        printf( "%s \n", character);
         x = fgetc( file );
+        while(x != EOF)
+    {
+       // len_tmp = strlen(title) - 1; /* -1 because of the newline. */
 
-        for (i = 1; i < dungArr.row; i++)
-            for (j = 1; j < dungArr.col; j++)
+        /* Just kill the newline with an extra '\0'. */
+        //if(title[len_tmp] == '\n')
+        //    title[len_tmp] = '\0';
+
+
+        fscanf (file, "%d %d %d", &dungArr.row, &dungArr.col, &dungArr.moves);
+
+        createDungeon(dungArr);
+
+        for (i = 0; i < dungArr.row; i++)
+            for (j = 0; j < dungArr.col; j++)
 
                 if ( x != '\n' && x != '\r' )
                 {
@@ -89,6 +94,7 @@ int main(int argc ,char* argv[])
                     }
 
         printf( "%c", x );
+                }
     }
     count++;
     if (count == dungArr.row )
@@ -96,12 +102,13 @@ int main(int argc ,char* argv[])
 
     x = fgetc( file );
     if ( x != '\n' && x != '\r' ){
-            solveDung( x);
+            solveDung( x, dungArr);
 
     }
     }
-    createDungeon();
-    printDungeon();
+
+
+    printDungeon(dungArr);
     fclose( file );
 
     }
@@ -109,61 +116,79 @@ int main(int argc ,char* argv[])
 
     return EXIT_SUCCESS;
 }
-void checkState(){
+void checkState(Dungeon dungArr1){
+    int i,j;
+
+    assert(dungArr1.row > 0);
+    assert(dungArr1.row <= MAX_DIMENSION);
+    assert(dungArr1.col > 0);
+    assert(dungArr1.col <= MAX_DIMENSION);
+
+    #ifndef NDEBUG
+
+ for (  i=0 ; i < dungArr1.row+2; i++ )
+  {
+    for (  j=0 ; j < dungArr1.col+2  ; j++ )
+    {
+      printf( "%c", dungArr1.array[i][j] );
+    }
+    printf( "\n" );
+  }
+#endif
+
 
 }
-void solveDung( int move){
+void solveDung( int move, Dungeon dungArr1){
 
-    Dungeon dungArr1;
+
     int i,j;
     int numMoves = 0;
 
     for (i = 0; i < dungArr1.row; i++)
         for (j = 0; j < dungArr1.col; j++)
 
-    if(dungArr1.array[i][j] = '@')
+    if(dungArr1.array[i][j] == '@')
         {
           if(move == '^')
           {
             dungArr1.array[i][j - 1] = '@'; //move char @ at proper position
-            illuminate(); //re-evaluate illumination
+            illuminate(dungArr1); //re-evaluate illumination
            // numMoves++; //increment
-            printf("Move %d", numMoves);
+            printf("Move %d :\n", numMoves);
           }
 
           else if(move == 'V')
           {
             dungArr1.array[i][j + 1] = '@'; //move char @ at proper position
-            illuminate(); //re-evaluate illumination
+            illuminate(dungArr1); //re-evaluate illumination
             numMoves++; //increment
-            printf("Move %d", numMoves);
+            printf("Move %d :\n", numMoves);
           }
 
           else if(move == '<')
           {
            dungArr1.array[i - 1][j ] = '@'; //move char @ at proper position
-            illuminate(); //re-evaluate illumination
+            illuminate(dungArr1); //re-evaluate illumination
             numMoves++; //increment
-            printf("Move %d", numMoves);
+            printf("Move %d :\n", numMoves);
           }
 
           else
           {
            dungArr1.array[i +1][j] = '@'; //move char @ at proper position
-            illuminate(); //re-evaluate illumination
+            illuminate(dungArr1); //re-evaluate illumination
             numMoves++; //increment
-            printf("Move %d", numMoves);
+            printf("Move %d :\n", numMoves);
           }
         }
 }
 
 
-void illuminate(){
+void illuminate(Dungeon dungArr1){
 
     Boolean cNTilluminate = false;
     int distance ;
     int i,j,x1, x2,y1 ,y2;
-    Dungeon dungArr1;
     int count =0;
 
 
@@ -173,18 +198,25 @@ void illuminate(){
         if(dungArr1.array[i][j] == WALL && dungArr1.row < 0 && dungArr1.row >= dungArr1.row +1 && dungArr1.col < 0 && dungArr1.col >= dungArr1.col +1 ){
             cNTilluminate = false;
         }
-    else{
 
+
+    else{
         if(dungArr1.array[i][j] == LIGHT )
         {
             count++ ;
+            x1 = i;
+            x2 = j;
+        }
+        if(dungArr1.array[i][j] != LIGHT)
+            y1 = i;
+        y2 = j;
 
-            distance = sqrt((x2-x1)^2 + (y2-y1)^2);
-
-            if(distance == 1) //if any char is 1 step away from array, illuminate it
+        distance = sqrt((x2-x1)^2 + (y2-y1)^2);
+        if(distance == 1) //if any char is 1 step away from array, illuminate it
             {
                 dungArr1.array[i][j] = '#';
             }
+
 
             else if(distance == 2) //if any char is 2 steps away from array, illuminate it
             {
@@ -196,15 +228,14 @@ void illuminate(){
                 dungArr1.array[i][j] = '-';
             }
 
-            cNTilluminate = false;
-            }
+
             else if(dungArr1.array[i][j] == ILLUM_BFORE ){
 
                 dungArr1.array[i][j] = ',';
 
             }
             else{
-                    dungArr1.array[i][j] == CAN_ILLU ;
+                    dungArr1.array[i][j] = CAN_ILLU ;
 
             }
 
@@ -213,12 +244,11 @@ void illuminate(){
 
 }
 
-void createDungeon(){
+void createDungeon(Dungeon dungArr1){
 
     int i,j;
-    Dungeon dungArr1;
 
-    /* initialize the dungeon to empty */
+     //initialize the dungeon to empty /
     for (i = 0; i < dungArr1.row+2; i++)
         for (j = 0; j < dungArr1.col+2; j++)
             dungArr1.array[i][j] = '.';
@@ -238,14 +268,13 @@ void createDungeon(){
 
 }
 
-void printDungeon(){
+void printDungeon(Dungeon dungArr2){
 
   int i;
    int j;
-  checkState();
+  checkState(dungArr2);
 
   // standard printing of a matrix
-   Dungeon dungArr2;
   for (  i=0 ; i < dungArr2.row+2; i++ )
   {
     for (  j=0 ; j < dungArr2.col+2  ; j++ )
@@ -257,6 +286,6 @@ void printDungeon(){
 
   printf( "\n" );
 
-  checkState();
+  checkState(dungArr2);
 
 }
