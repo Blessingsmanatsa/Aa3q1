@@ -3,6 +3,15 @@
 #include <assert.h>
 #include <string.h>
 #include <math.h>
+
+
+// NAME: Blessings Manatsa
+// STUDENT NUMBER: 7759480
+// COURSE: COMP 2160, SECTION: A1
+// INSTRUCTOR:
+// ASSIGNMENT: assignment 1, QUESTION: question 1
+//
+
 //-------------------------------------------------------------------------------------
 // CONSTANTS and TYPES
 
@@ -63,6 +72,7 @@ int main(int argc ,char* argv[])
 
         character = fgets(title, MAX_DIMENSION,file);
         printf( "%s \n", character);
+        fscanf (file, "%d %d %d", &dungArr.row, &dungArr.col, &dungArr.moves);
         x = fgetc( file );
         assert(x != EOF );
         while(x != EOF)
@@ -72,9 +82,6 @@ int main(int argc ,char* argv[])
         /* Just kill the newline with an extra '\0'. */
         //if(title[len_tmp] == '\n')
         //    title[len_tmp] = '\0';
-
-
-        fscanf (file, "%d %d %d", &dungArr.row, &dungArr.col, &dungArr.moves);
 
         createDungeon(dungArr);
 
