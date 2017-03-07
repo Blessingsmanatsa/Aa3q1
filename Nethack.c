@@ -120,6 +120,8 @@ int main(int argc ,char* argv[])
 
     return EXIT_SUCCESS;
 }
+
+// we check a cell over and over again...
 void checkState(Dungeon dungArr1){
     int i,j;
 
@@ -144,6 +146,7 @@ void checkState(Dungeon dungArr1){
 }
 void solveDung( int move, Dungeon dungArr1){
 
+     checkState(dungArr1); //it the invariant the check the state of the method
 
     int i,j;
     int numMoves = 0;
@@ -185,10 +188,13 @@ void solveDung( int move, Dungeon dungArr1){
             printf("Move %d :\n", numMoves);
           }
         }
+         checkState(dungArr1); //it the invariant the check the state of the method
 }
 
 
 void illuminate(Dungeon dungArr1){
+
+    checkState(dungArr1); //it the invariant the check the state of the method
 
     Boolean cNTilluminate = false;
     int distance ;
@@ -248,6 +254,7 @@ void illuminate(Dungeon dungArr1){
             }
 
         }
+        checkState(dungArr1);
 
 
 }
