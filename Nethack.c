@@ -64,6 +64,7 @@ int main(int argc ,char* argv[])
         character = fgets(title, MAX_DIMENSION,file);
         printf( "%s \n", character);
         x = fgetc( file );
+        assert(x != EOF );
         while(x != EOF)
     {
        // len_tmp = strlen(title) - 1; /* -1 because of the newline. */
@@ -79,6 +80,8 @@ int main(int argc ,char* argv[])
 
         for (i = 0; i < dungArr.row; i++)
             for (j = 0; j < dungArr.col; j++)
+                assert(x != '\n' );
+                assert(x != '\r');
 
                 if ( x != '\n' && x != '\r' )
                 {
@@ -97,6 +100,7 @@ int main(int argc ,char* argv[])
                 }
     }
     count++;
+
     if (count == dungArr.row )
     for (i = 1; i < dungArr.moves; i++){
 
@@ -194,6 +198,10 @@ void illuminate(Dungeon dungArr1){
 
     for (i = 0; i < dungArr1.row; i++)
         for (j = 0; j < dungArr1.col; j++)
+            assert(dungArr1.row > 0);
+    assert(dungArr1.row <= MAX_DIMENSION);
+    assert(dungArr1.col > 0);
+    assert(dungArr1.col <= MAX_DIMENSION);
 
         if(dungArr1.array[i][j] == WALL && dungArr1.row < 0 && dungArr1.row >= dungArr1.row +1 && dungArr1.col < 0 && dungArr1.col >= dungArr1.col +1 ){
             cNTilluminate = false;
@@ -246,6 +254,7 @@ void illuminate(Dungeon dungArr1){
 
 void createDungeon(Dungeon dungArr1){
 
+    checkState(dungArr1);
     int i,j;
 
      //initialize the dungeon to empty /
