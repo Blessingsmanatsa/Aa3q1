@@ -17,7 +17,6 @@
 
 
 //-------------------------------------------------------------------------------------
-
 #define MAX_DIMENSION 500
 // constant defination of the dungeon
 const char WALL        = '~';
@@ -47,19 +46,19 @@ void printDungeon(Dungeon dungArr2);
 void createDungeon();
 
 
-int main(int argc ,char* argv[])
+int main(int argc,char* argv[])
 {
     Dungeon dungArr;
     int count = 0;
     int x;
     int i,j;
-    int len_tmp;
+
     char title[MAX_DIMENSION];
     char *character;
 
 
 
-   if ( argc != 2 ) /* argc should be 2 for correct execution */
+    if ( argc != 2 ) /* argc should be 2 for correct execution */
     {
         /* We print argv[0] assuming it is the program name */
         printf( "usage: %s filename", argv[0] );
@@ -75,52 +74,54 @@ int main(int argc ,char* argv[])
         fscanf (file, "%d %d %d", &dungArr.row, &dungArr.col, &dungArr.moves);
         x = fgetc( file );
         assert(x != EOF );
-        while(x != EOF)
-    {
-       // len_tmp = strlen(title) - 1; /* -1 because of the newline. */
+        while(character != NULL)
+        {
+            // len_tmp = strlen(title) - 1; /* -1 because of the newline. */
 
-        /* Just kill the newline with an extra '\0'. */
-        //if(title[len_tmp] == '\n')
-        //    title[len_tmp] = '\0';
+            /* Just kill the newline with an extra '\0'. */
+            //if(title[len_tmp] == '\n')
+            //    title[len_tmp] = '\0';
 
-        createDungeon(dungArr);
+            createDungeon(dungArr);
 
-        for (i = 0; i < dungArr.row; i++)
-            for (j = 0; j < dungArr.col; j++)
-                assert(x != '\n' );
-                assert(x != '\r');
+            for (i = 0; i < dungArr.row; i++)
+                for (j = 0; j < dungArr.col; j++)
+                    assert(x != '\n' );
+            assert(x != '\r');
 
+            if ( x != '\n' && x != '\r' )
+            {
+                dungArr.array[i][j] = x;
+
+                if ( ++j >= dungArr.col )
+                {
+                    j = 0;
+                    if ( ++i >= dungArr.row )
+                    {
+                        break;
+                    }
+                }
+
+                printf( "%c", x );
+            }
+        }
+        count++;
+
+        if (count == dungArr.row )
+            for (i = 1; i < dungArr.moves; i++)
+            {
+
+                x = fgetc( file );
                 if ( x != '\n' && x != '\r' )
                 {
-                    dungArr.array[i][j] = x;
+                    solveDung( x, dungArr);
 
-                    if ( ++j >= dungArr.col )
-                    {
-                        j = 0;
-                        if ( ++i >= dungArr.row )
-                        {
-                            break;
-                        }
-                    }
-
-        printf( "%c", x );
                 }
-    }
-    count++;
-
-    if (count == dungArr.row )
-    for (i = 1; i < dungArr.moves; i++){
-
-    x = fgetc( file );
-    if ( x != '\n' && x != '\r' ){
-            solveDung( x, dungArr);
-
-    }
-    }
+            }
 
 
-    printDungeon(dungArr);
-    fclose( file );
+        printDungeon(dungArr);
+        fclose( file );
 
     }
 
@@ -129,31 +130,35 @@ int main(int argc ,char* argv[])
 }
 
 // we check a cell over and over again...
-void checkState(Dungeon dungArr1){
+void checkState(Dungeon dungArr1)
+{
     int i,j;
+    int x;
+//     x = fgetc( file );
 
     assert(dungArr1.row > 0);
     assert(dungArr1.row <= MAX_DIMENSION);
     assert(dungArr1.col > 0);
     assert(dungArr1.col <= MAX_DIMENSION);
 
-    #ifndef NDEBUG
+#ifndef NDEBUG
 
- for (  i=0 ; i < dungArr1.row+2; i++ )
-  {
-    for (  j=0 ; j < dungArr1.col+2  ; j++ )
+    for (  i=0 ; i < dungArr1.row+2; i++ )
     {
-      printf( "%c", dungArr1.array[i][j] );
+        for (  j=0 ; j < dungArr1.col+2  ; j++ )
+        {
+            printf( "%c", dungArr1.array[i][j] );
+        }
+        printf( "\n" );
     }
-    printf( "\n" );
-  }
 #endif
 
 
 }
-void solveDung( int move, Dungeon dungArr1){
+void solveDung( int move, Dungeon dungArr1)
+{
 
-     checkState(dungArr1); //it the invariant the check the state of the method
+    checkState(dungArr1); //it the invariant the check the state of the method
 
     int i,j;
     int numMoves = 0;
@@ -161,117 +166,120 @@ void solveDung( int move, Dungeon dungArr1){
     for (i = 0; i < dungArr1.row; i++)
         for (j = 0; j < dungArr1.col; j++)
 
-    if(dungArr1.array[i][j] == '@')
-        {
-          if(move == '^')
-          {
-            dungArr1.array[i][j - 1] = '@'; //move char @ at proper position
-            illuminate(dungArr1); //re-evaluate illumination
-           // numMoves++; //increment
-            printf("Move %d :\n", numMoves);
-          }
+            if(dungArr1.array[i][j] == '@')
+            {
+                if(move == '^')
+                {
+                    dungArr1.array[i][j - 1] = '@'; //move char @ at proper position
+                    illuminate(dungArr1); //re-evaluate illumination
+                    // numMoves++; //increment
+                    printf("Move %d :\n", numMoves);
+                }
 
-          else if(move == 'V')
-          {
-            dungArr1.array[i][j + 1] = '@'; //move char @ at proper position
-            illuminate(dungArr1); //re-evaluate illumination
-            numMoves++; //increment
-            printf("Move %d :\n", numMoves);
-          }
+                else if(move == 'V')
+                {
+                    dungArr1.array[i][j + 1] = '@'; //move char @ at proper position
+                    illuminate(dungArr1); //re-evaluate illumination
+                    numMoves++; //increment
+                    printf("Move %d :\n", numMoves);
+                }
 
-          else if(move == '<')
-          {
-           dungArr1.array[i - 1][j ] = '@'; //move char @ at proper position
-            illuminate(dungArr1); //re-evaluate illumination
-            numMoves++; //increment
-            printf("Move %d :\n", numMoves);
-          }
+                else if(move == '<')
+                {
+                    dungArr1.array[i - 1][j ] = '@'; //move char @ at proper position
+                    illuminate(dungArr1); //re-evaluate illumination
+                    numMoves++; //increment
+                    printf("Move %d :\n", numMoves);
+                }
 
-          else
-          {
-           dungArr1.array[i +1][j] = '@'; //move char @ at proper position
-            illuminate(dungArr1); //re-evaluate illumination
-            numMoves++; //increment
-            printf("Move %d :\n", numMoves);
-          }
-        }
-         checkState(dungArr1); //it the invariant the check the state of the method
+                else
+                {
+                    dungArr1.array[i +1][j] = '@'; //move char @ at proper position
+                    illuminate(dungArr1); //re-evaluate illumination
+                    numMoves++; //increment
+                    printf("Move %d :\n", numMoves);
+                }
+            }
+    checkState(dungArr1); //it the invariant the check the state of the method
 }
 
 
-void illuminate(Dungeon dungArr1){
+void illuminate(Dungeon dungArr1)
+{
 
     checkState(dungArr1); //it the invariant the check the state of the method
 
     Boolean cNTilluminate = false;
     int distance ;
-    int i,j,x1, x2,y1 ,y2;
+    int i,j,x1, x2,y1,y2;
     int count =0;
 
 
     for (i = 0; i < dungArr1.row; i++)
         for (j = 0; j < dungArr1.col; j++)
-            assert(dungArr1.row > 0);
-    assert(dungArr1.row <= MAX_DIMENSION);
-    assert(dungArr1.col > 0);
-    assert(dungArr1.col <= MAX_DIMENSION);
-
-        if(dungArr1.array[i][j] == WALL && dungArr1.row < 0 && dungArr1.row >= dungArr1.row +1 && dungArr1.col < 0 && dungArr1.col >= dungArr1.col +1 ){
-            cNTilluminate = false;
-        }
 
 
-    else{
-        if(dungArr1.array[i][j] == LIGHT )
-        {
-            count++ ;
-            x1 = i;
-            x2 = j;
-        }
-        if(dungArr1.array[i][j] != LIGHT)
-            y1 = i;
-        y2 = j;
-
-        distance = sqrt((x2-x1)^2 + (y2-y1)^2);
-        if(distance == 1) //if any char is 1 step away from array, illuminate it
+            if(dungArr1.array[i][j] == WALL && dungArr1.row < 0 && dungArr1.row >= dungArr1.row +1 && dungArr1.col < 0 && dungArr1.col >= dungArr1.col +1 )
             {
-                dungArr1.array[i][j] = '#';
+                cNTilluminate = false;
             }
 
 
-            else if(distance == 2) //if any char is 2 steps away from array, illuminate it
+            else
             {
-                dungArr1.array[i][j] = '=';
-            }
+                if(dungArr1.array[i][j] == LIGHT )
+                {
+                    count++ ;
+                    x1 = i;
+                    x2 = j;
+                }
+                if(dungArr1.array[i][j] != LIGHT)
+                y1 = i;
+                y2 = j;
 
-            else if(distance == 3) //if any char is 3 steps away from array, illuminate it
-            {
-                dungArr1.array[i][j] = '-';
-            }
+                distance = sqrt((x2-x1)^2 + (y2-y1)^2);
+                if(distance == 1) //if any char is 1 step away from array, illuminate it
+                {
+                    dungArr1.array[i][j] = '#';
+                }
 
 
-            else if(dungArr1.array[i][j] == ILLUM_BFORE ){
+                else if(distance == 2) //if any char is 2 steps away from array, illuminate it
+                {
+                    dungArr1.array[i][j] = '=';
+                }
 
-                dungArr1.array[i][j] = ',';
+                else if(distance == 3) //if any char is 3 steps away from array, illuminate it
+                {
+                    dungArr1.array[i][j] = '-';
+                }
 
-            }
-            else{
+
+                else if(dungArr1.array[i][j] == ILLUM_BFORE )
+                {
+
+                    dungArr1.array[i][j] = ',';
+
+                }
+                else
+                {
                     dungArr1.array[i][j] = CAN_ILLU ;
 
-            }
+                }
 
-        }
-        checkState(dungArr1);
+            }
+    checkState(dungArr1);
 
 
 }
 
-void createDungeon(Dungeon dungArr1){
+void createDungeon(Dungeon dungArr1)
+{
 
     checkState(dungArr1);
     int i,j;
 
-     //initialize the dungeon to empty /
+    //initialize the dungeon to empty /
     for (i = 0; i < dungArr1.row+2; i++)
         for (j = 0; j < dungArr1.col+2; j++)
             dungArr1.array[i][j] = '.';
@@ -291,24 +299,25 @@ void createDungeon(Dungeon dungArr1){
 
 }
 
-void printDungeon(Dungeon dungArr2){
+void printDungeon(Dungeon dungArr2)
+{
 
-  int i;
-   int j;
-  checkState(dungArr2);
+    int i;
+    int j;
+    checkState(dungArr2);
 
-  // standard printing of a matrix
-  for (  i=0 ; i < dungArr2.row+2; i++ )
-  {
-    for (  j=0 ; j < dungArr2.col+2  ; j++ )
+    // standard printing of a matrix
+    for (  i=0 ; i < dungArr2.row+2; i++ )
     {
-      printf( "%c", dungArr2.array[i][j] );
+        for (  j=0 ; j < dungArr2.col+2  ; j++ )
+        {
+            printf( "%c", dungArr2.array[i][j] );
+        }
+        printf( "\n" );
     }
+
     printf( "\n" );
-  }
 
-  printf( "\n" );
-
-  checkState(dungArr2);
+    checkState(dungArr2);
 
 }
