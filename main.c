@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "table.h"
 #define T_SIZE 4
+#define T_SIZE2 2
+
 
 //-------------------------------------------------------------------------------------
 // CONSTANTS and TYPES
