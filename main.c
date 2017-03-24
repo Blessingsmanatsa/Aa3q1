@@ -4,6 +4,7 @@
 #include "table.h"
 #define T_SIZE 4
 #define T_SIZE2 2
+#define BUFFER 1000000
 
 
 //-------------------------------------------------------------------------------------
@@ -193,7 +194,7 @@ void testLeaks()
   int i;
   char * string1[1] = { "hi" };
 
-  for ( i=0 ; i<1000000 ; i++ )
+  for ( i=0 ; i<BUFFER ; i++ )
   {
     insert( string1[0] );
     currentSize++;
@@ -202,13 +203,13 @@ void testLeaks()
   testFound( 1, string1 );
   testSize();
 
-  for ( i=0 ; i<1000000 ; i++ )
+  for ( i=0 ; i<BUFFER ; i++ )
   {
     delete( string1[0] );
     currentSize--;
   }
 
-  testNotFound( 1, leakStrings );
+  testNotFound( 1, string );
   testSize();
 }
 
