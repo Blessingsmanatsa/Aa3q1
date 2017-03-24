@@ -191,30 +191,27 @@ void testNotFound( int size, char *strings[] )
 void testLeaks()
 {
   int i;
-  char *leakStrings[1] = { "hi" };
+  char * string1[1] = { "hi" };
 
   for ( i=0 ; i<1000000 ; i++ )
   {
-    insert( leakStrings[0] );
+    insert( string1[0] );
     currentSize++;
   }
 
-  testFound( 1, leakStrings );
+  testFound( 1, string1 );
   testSize();
 
   for ( i=0 ; i<1000000 ; i++ )
   {
-    delete( leakStrings[0] );
+    delete( string1[0] );
     currentSize--;
   }
 
   testNotFound( 1, leakStrings );
   testSize();
-
-  // we should add a pause so we can check the memory footprint...
 }
 
-// The suite cleanup function.
 
 void cleanSuite()
 {
