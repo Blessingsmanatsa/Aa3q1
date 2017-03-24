@@ -209,7 +209,7 @@ void testLeaks()
     currentSize--;
   }
 
-  testNotFound( 1, string );
+  testNotFound( 1, string1 );
   testSize();
 }
 
