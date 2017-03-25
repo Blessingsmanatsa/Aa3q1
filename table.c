@@ -169,6 +169,9 @@ char * firstItem()
 
   validateTableState();
   assert(top->string != NULL);
+  // make sure we're still in our list...
+    assert( num_traversals <= numNodes );
+
 
   return top->string;
 }
@@ -187,6 +190,9 @@ char * nextItem()
     item = traverseNode->string;
     traverseNode = traverseNode->next;
   }
+  // make sure we're still in our list...
+    assert( num_traversals <= numNodes );
+
 
   return item;
 }
